@@ -1,0 +1,23 @@
+<idea-plugin>
+    <id>org.example.IntelliJ-Plugin-DecompileTool</id>
+    <name>APK Injector</name>
+    <vendor email="egor.klepikov@jetbrains.com" url="https://www.jetbrains.com/">JetBrains</vendor>
+
+    <description>Plugin allows to adapt the APK file for debugging.</description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <!-- Add your actions here -->
+        <action id="com.plugin.decompiletool.actions.ProcessApkAction" class="com.plugin.decompiletool.actions.ProcessApkAction"
+                text="Process APK">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+    </actions>
+</idea-plugin>
