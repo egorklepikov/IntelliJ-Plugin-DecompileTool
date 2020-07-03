@@ -21,6 +21,9 @@ public class SettingsDialog extends JDialog {
   private JComboBox selectAppComboBox;
   private JLabel bundleIDLabel;
   private JTextArea textArea1;
+  private JComboBox selectVersionComboBox;
+  private JLabel chooseAppLabel;
+  private JLabel chooseVersionLabel;
 
   public SettingsDialog() {
     setContentPane(contentPane);
@@ -35,17 +38,14 @@ public class SettingsDialog extends JDialog {
     chooseApkButton.addActionListener(e -> onApkLoad());
     localLoadType.addActionListener(e -> changeUI(1));
     remoteLoadType.addActionListener(e -> changeUI(2));
-    bundleIDField.addKeyListener(new KeyListener() {
-      @Override
-      public void keyTyped(KeyEvent e) {
-        onBundleFieldChanged();
+    bundleIDField.addKeyListener(new KeyAdapter() {
+      public void keyReleased(KeyEvent e) {
+        if(bundleIDField.getText().length() == 0)
+          loadDataButton.setEnabled(false);
+        else {
+          loadDataButton.setEnabled(true);
+        }
       }
-
-      @Override
-      public void keyPressed(KeyEvent e) { }
-
-      @Override
-      public void keyReleased(KeyEvent e) { }
     });
 
     setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -66,24 +66,15 @@ public class SettingsDialog extends JDialog {
     radioButtonGroup.add(remoteLoadType);
   }
 
-  private void onSearch() {
-    ArrayList<AppInformation> applications = DecompileTool.getInstance().getAppsList(bundleIDField.getText());
-
-  }
-
-  private void onBundleFieldChanged() {
-    if (bundleIDField.getText().isEmpty()) {
-      loadDataButton.setEnabled(false);
-    } else {
-      loadDataButton.setEnabled(true);
-    }
-  }
-
   private void changeUI(int uiType) {
     if (uiType == 1) {
       bundleIDLabel.setEnabled(false);
       bundleIDField.setText("");
       bundleIDField.setEnabled(false);
+      chooseAppLabel.setEnabled(false);
+      chooseVersionLabel.setEnabled(false);
+      selectAppComboBox.setEnabled(false);
+      selectVersionComboBox.setEnabled(false);
       loadDataButton.setEnabled(false);
       selectAppComboBox.removeAllItems();
       selectAppComboBox.setEnabled(false);
@@ -94,6 +85,8 @@ public class SettingsDialog extends JDialog {
       chooseApkButton.setEnabled(false);
       bundleIDLabel.setEnabled(true);
       bundleIDField.setEnabled(true);
+      chooseAppLabel.setEnabled(true);
+      chooseVersionLabel.setEnabled(true);
       selectAppComboBox.removeAllItems();
       selectAppComboBox.setEnabled(false);
     }
@@ -122,5 +115,17 @@ public class SettingsDialog extends JDialog {
 
   private void onCancel() {
     dispose();
+  }
+
+  private void onSearch() {
+    ArrayList<AppInformation> applications = DecompileTool.getInstance().getAppsList(bundleIDField.getText());
+  }
+
+  private void onBundleFieldChanged() {
+    if (bundleIDField.getText().isEmpty()) {
+      loadDataButton.setEnabled(false);
+    } else {
+      loadDataButton.setEnabled(true);
+    }
   }
 }
