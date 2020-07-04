@@ -1,12 +1,13 @@
 package com.plugin.decompiletool.ui;
 
-import decompiletool.DecompileTool;
+import com.plugin.decompiletool.controllers.ApplicationDataController;
 import decompiletool.network.AppInformation;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SettingsDialog extends JDialog {
   private JPanel contentPane;
@@ -24,23 +25,35 @@ public class SettingsDialog extends JDialog {
   private JComboBox selectVersionComboBox;
   private JLabel chooseAppLabel;
   private JLabel chooseVersionLabel;
+  private JLabel searchProgress;
+  private JPanel settingsPanel;
+
+  private HashMap<String, AppInformation> applications;
 
   public SettingsDialog() {
     setContentPane(contentPane);
     setModal(true);
     getRootPane().setDefaultButton(processButton);
-    setSize(800, 700);
+    setSize(900, 700);
     setDialogLocation();
+    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+    addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+        onCancel();
+      }
+    });
+
+    searchProgress.setVisible(false);
 
     loadDataButton.addActionListener(e -> onSearch());
     processButton.addActionListener(e -> onOK());
     buttonCancel.addActionListener(e -> onCancel());
     chooseApkButton.addActionListener(e -> onApkLoad());
-    localLoadType.addActionListener(e -> changeUI(1));
-    remoteLoadType.addActionListener(e -> changeUI(2));
+    localLoadType.addActionListener(e -> changeLoadingMethodUI(1));
+    remoteLoadType.addActionListener(e -> changeLoadingMethodUI(2));
     bundleIDField.addKeyListener(new KeyAdapter() {
       public void keyReleased(KeyEvent e) {
-        if(bundleIDField.getText().length() == 0)
+        if (bundleIDField.getText().length() == 0)
           loadDataButton.setEnabled(false);
         else {
           loadDataButton.setEnabled(true);
@@ -48,10 +61,14 @@ public class SettingsDialog extends JDialog {
       }
     });
 
-    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-    addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        onCancel();
+    selectAppComboBox.addActionListener(e -> {
+      if (applications != null) {
+        selectVersionComboBox.removeAllItems();
+        AppInformation application = applications.get(selectAppComboBox.getSelectedItem());
+        HashMap<String, AppInformation.AppRelease> releases = ApplicationDataController.getInstance().getAppReleaseInfo(application);
+        for (Map.Entry<String, AppInformation.AppRelease> release : releases.entrySet()) {
+          selectVersionComboBox.addItem(release.getKey());
+        }
       }
     });
 
@@ -66,7 +83,7 @@ public class SettingsDialog extends JDialog {
     radioButtonGroup.add(remoteLoadType);
   }
 
-  private void changeUI(int uiType) {
+  private void changeLoadingMethodUI(int uiType) {
     if (uiType == 1) {
       bundleIDLabel.setEnabled(false);
       bundleIDField.setText("");
@@ -76,9 +93,10 @@ public class SettingsDialog extends JDialog {
       selectAppComboBox.setEnabled(false);
       selectVersionComboBox.setEnabled(false);
       loadDataButton.setEnabled(false);
+      chooseApkButton.setEnabled(true);
+      processButton.setEnabled(false);
       selectAppComboBox.removeAllItems();
       selectAppComboBox.setEnabled(false);
-      chooseApkButton.setEnabled(true);
     } else if (uiType == 2) {
       apkPathField.setText("");
       apkPathField.setEnabled(false);
@@ -87,8 +105,43 @@ public class SettingsDialog extends JDialog {
       bundleIDField.setEnabled(true);
       chooseAppLabel.setEnabled(true);
       chooseVersionLabel.setEnabled(true);
+      processButton.setEnabled(false);
       selectAppComboBox.removeAllItems();
       selectAppComboBox.setEnabled(false);
+    }
+  }
+
+  private void changeOnSearchUI(int uiType) {
+    if (uiType == 1) {
+      loadDataButton.setEnabled(false);
+      bundleIDField.setEnabled(false);
+      remoteLoadType.setEnabled(false);
+      localLoadType.setEnabled(false);
+      searchProgress.setVisible(true);
+      selectAppComboBox.removeAllItems();
+      selectAppComboBox.setEnabled(false);
+      selectVersionComboBox.removeAllItems();
+      selectVersionComboBox.setEnabled(false);
+      processButton.setEnabled(false);
+    } else if (uiType == 2) {
+      loadDataButton.setEnabled(true);
+      bundleIDField.setEnabled(true);
+      bundleIDField.setText("");
+      remoteLoadType.setEnabled(true);
+      localLoadType.setEnabled(true);
+      searchProgress.setVisible(false);
+      processButton.setEnabled(false);
+    } else if (uiType == 3) {
+      loadDataButton.setEnabled(true);
+      bundleIDField.setEnabled(true);
+      remoteLoadType.setEnabled(true);
+      localLoadType.setEnabled(true);
+      searchProgress.setVisible(false);
+      chooseAppLabel.setEnabled(true);
+      selectAppComboBox.setEnabled(true);
+      chooseVersionLabel.setEnabled(true);
+      selectVersionComboBox.setEnabled(true);
+      processButton.setEnabled(true);
     }
   }
 
@@ -118,14 +171,20 @@ public class SettingsDialog extends JDialog {
   }
 
   private void onSearch() {
-    ArrayList<AppInformation> applications = DecompileTool.getInstance().getAppsList(bundleIDField.getText());
+    changeOnSearchUI(1);
+    new Thread(() -> {
+      int searchResult = ApplicationDataController.getInstance().loadData(bundleIDField.getText());
+      changeOnSearchUI(searchResult);
+      if (searchResult == 3) {
+        updateComboboxes();
+      }
+    }).start();
   }
 
-  private void onBundleFieldChanged() {
-    if (bundleIDField.getText().isEmpty()) {
-      loadDataButton.setEnabled(false);
-    } else {
-      loadDataButton.setEnabled(true);
+  private void updateComboboxes() {
+    applications = ApplicationDataController.getInstance().getAppsList();
+    for(Map.Entry<String, AppInformation> application : applications.entrySet()) {
+      selectAppComboBox.addItem(application.getKey());
     }
   }
 }
