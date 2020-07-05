@@ -1,6 +1,7 @@
 package com.plugin.decompiletool.ui;
 
 import com.plugin.decompiletool.controllers.ApplicationDataController;
+import decompiletool.DecompileTool;
 import decompiletool.network.AppInformation;
 
 import javax.swing.*;
@@ -19,16 +20,17 @@ public class SettingsDialog extends JDialog {
   private JRadioButton remoteLoadType;
   private JTextField bundleIDField;
   private JButton loadDataButton;
-  private JComboBox selectAppComboBox;
+  private JComboBox<String> selectAppComboBox;
   private JLabel bundleIDLabel;
   private JTextArea textArea1;
-  private JComboBox selectVersionComboBox;
+  private JComboBox<String> selectVersionComboBox;
   private JLabel chooseAppLabel;
   private JLabel chooseVersionLabel;
   private JLabel searchProgress;
   private JPanel settingsPanel;
 
   private HashMap<String, AppInformation> applications;
+  private HashMap<String, AppInformation.AppRelease> releases;
 
   public SettingsDialog() {
     setContentPane(contentPane);
@@ -65,9 +67,11 @@ public class SettingsDialog extends JDialog {
       if (applications != null) {
         selectVersionComboBox.removeAllItems();
         AppInformation application = applications.get(selectAppComboBox.getSelectedItem());
-        HashMap<String, AppInformation.AppRelease> releases = ApplicationDataController.getInstance().getAppReleaseInfo(application);
-        for (Map.Entry<String, AppInformation.AppRelease> release : releases.entrySet()) {
-          selectVersionComboBox.addItem(release.getKey());
+        releases = ApplicationDataController.getInstance().getAppReleaseInfo(application);
+        if (releases != null) {
+          for (Map.Entry<String, AppInformation.AppRelease> release : releases.entrySet()) {
+            selectVersionComboBox.addItem(release.getKey());
+          }
         }
       }
     });
@@ -163,7 +167,52 @@ public class SettingsDialog extends JDialog {
   }
 
   private void onOK() {
-    dispose();
+    processButton.setEnabled(false);
+    if (localLoadType.isSelected()) {
+      DecompileTool.getInstance().selectApp(apkPathField.getText());
+    } else if (remoteLoadType.isSelected()) {
+      DecompileTool.getInstance().selectApp(getAppInformation(), getAppReleaseInformation());
+    }
+
+    new Thread(() -> {
+      DecompileTool.getInstance().startAppProcessing();
+    }).start();
+  }
+
+  private AppInformation.AppRelease getAppReleaseInformation() {
+    AppInformation.AppRelease appRelease = null;
+    for (Map.Entry<String, AppInformation.AppRelease> release : releases.entrySet()) {
+      String selectedItem = (String) selectVersionComboBox.getSelectedItem();
+      if (selectedItem != null) {
+        String releaseVersion = selectedItem.split("\\[")[0];
+        String releaseDate = selectedItem.split("\\[")[1];
+        if (releaseVersion.contains(release.getValue().getReleaseVersion()) && releaseDate.contains(release.getValue().getReleaseDate())) {
+          appRelease = release.getValue();
+          break;
+        }
+      } else {
+        throw new NullPointerException();
+      }
+    }
+    return appRelease;
+  }
+
+  private AppInformation getAppInformation() {
+    AppInformation appInformation = null;
+    for (Map.Entry<String, AppInformation> application : applications.entrySet()) {
+      String selectedItem = (String) selectAppComboBox.getSelectedItem();
+      if (selectedItem != null) {
+        String appName = selectedItem.split("\\[")[0];
+        String appVendor = selectedItem.split(String.valueOf("\\["))[1];
+        if (appName.contains(application.getValue().getAppName()) && appVendor.contains(application.getValue().getVendor())) {
+          appInformation = application.getValue();
+          break;
+        }
+      } else {
+        throw new NullPointerException();
+      }
+    }
+    return appInformation;
   }
 
   private void onCancel() {
@@ -176,15 +225,11 @@ public class SettingsDialog extends JDialog {
       int searchResult = ApplicationDataController.getInstance().loadData(bundleIDField.getText());
       changeOnSearchUI(searchResult);
       if (searchResult == 3) {
-        updateComboboxes();
+        applications = ApplicationDataController.getInstance().getAppsList();
+        for(Map.Entry<String, AppInformation> application : applications.entrySet()) {
+          selectAppComboBox.addItem(application.getKey());
+        }
       }
     }).start();
-  }
-
-  private void updateComboboxes() {
-    applications = ApplicationDataController.getInstance().getAppsList();
-    for(Map.Entry<String, AppInformation> application : applications.entrySet()) {
-      selectAppComboBox.addItem(application.getKey());
-    }
   }
 }

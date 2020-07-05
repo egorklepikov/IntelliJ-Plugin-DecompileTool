@@ -43,11 +43,15 @@ public class ApplicationDataController {
 
   public HashMap<String, AppInformation.AppRelease> getAppReleaseInfo(AppInformation appInformation) {
     ArrayList<AppInformation.AppRelease> versions = appInformation.getAppVersions();
-    HashMap<String, AppInformation.AppRelease> appReleases = new HashMap<>();
-    for(AppInformation.AppRelease version : versions) {
-      String releasePresentation = "Version: " + version.getReleaseVersion() + "\t [" + version.getReleaseDate() + ", " + version.getReleaseSize() + "]";
-      appReleases.put(releasePresentation, version);
+    if (versions != null) {
+      HashMap<String, AppInformation.AppRelease> appReleases = new HashMap<>();
+      for (AppInformation.AppRelease version : versions) {
+        String releasePresentation = "Version: " + version.getReleaseVersion() + "\t [" + version.getReleaseDate() + ", " + version.getReleaseSize() + "]";
+        appReleases.put(releasePresentation, version);
+      }
+      return appReleases;
+    } else {
+      return null;
     }
-    return appReleases;
   }
 }
