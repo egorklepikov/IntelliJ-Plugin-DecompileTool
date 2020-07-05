@@ -140,7 +140,9 @@
               </component>
               <component id="223ce" class="javax.swing.JLabel" binding="chooseAppLabel">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="115" height="17"/>
+                  </grid>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
@@ -158,7 +160,9 @@
               </component>
               <component id="c30ff" class="javax.swing.JLabel" binding="chooseVersionLabel">
                 <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="115" height="17"/>
+                  </grid>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
@@ -175,7 +179,9 @@
               </component>
               <component id="3273a" class="javax.swing.JLabel" binding="bundleIDLabel">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <preferred-size width="115" height="17"/>
+                  </grid>
                 </constraints>
                 <properties>
                   <enabled value="false"/>
