@@ -163,6 +163,7 @@ public class SettingsDialog extends JDialog {
     if (dialogResult == JFileChooser.APPROVE_OPTION) {
       String apkPath = fileChooser.getSelectedFile().getAbsolutePath();
       apkPathField.setText(apkPath);
+      processButton.setEnabled(true);
     }
   }
 
