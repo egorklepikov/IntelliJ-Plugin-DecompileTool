@@ -5,17 +5,18 @@
 
     <description>Plugin allows to adapt the APK file for debugging.</description>
 
-    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <applicationService serviceImplementation="com.plugin.decompiletool.settings.AppSettingsState"/>
+        <applicationConfigurable parentId="tools" instance="com.plugin.decompiletool.settings.AppSettingsConfigurable"
+                                 id="com.plugin.decompiletool.settings.AppSettingsConfigurable"
+                                 displayName="Decompile Tool"/>
     </extensions>
 
     <actions>
-        <!-- Add your actions here -->
-        <action id="com.plugin.decompiletool.actions.ProcessApkAction" class="com.plugin.decompiletool.actions.ProcessApkAction"
+        <action id="com.plugin.decompiletool.actions.ProcessApkAction"
+                class="com.plugin.decompiletool.actions.ProcessApkAction"
                 text="Process APK">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
