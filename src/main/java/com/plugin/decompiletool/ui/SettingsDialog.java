@@ -1,6 +1,7 @@
 package com.plugin.decompiletool.ui;
 
 import com.plugin.decompiletool.controllers.ApplicationDataController;
+import com.plugin.decompiletool.settings.AppSettingsState;
 import decompiletool.DecompileTool;
 import decompiletool.network.AppInformation;
 
@@ -175,6 +176,7 @@ public class SettingsDialog extends JDialog {
       DecompileTool.getInstance().selectApp(getAppInformation(), getAppReleaseInformation());
     }
 
+    DecompileTool.getInstance().setTargetApkPath(AppSettingsState.getInstance().apkStoragePath);
     new Thread(() -> {
       DecompileTool.getInstance().startAppProcessing();
     }).start();
