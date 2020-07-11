@@ -76,11 +76,11 @@ public class SettingsDialog extends JDialog {
       }
     });
 
-    contentPane.registerKeyboardAction(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        onCancel();
-      }
-    }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    contentPane.registerKeyboardAction(
+      e -> onCancel(),
+      KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+      JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+    );
 
     ButtonGroup radioButtonGroup = new ButtonGroup();
     radioButtonGroup.add(localLoadType);
