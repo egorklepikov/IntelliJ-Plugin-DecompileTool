@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 @State(name = "com.plugin.decompiletool.settings.AppSettingsState", storages = {@Storage("decompiletool.settings.xml")})
 public class AppSettingsState implements PersistentStateComponent<AppSettingsState> {
 
-  public String apkStoragePath = System.getProperty("user.home") + "/Desktop";
+  public String apkStoragePath = System.getProperty("user.home") + "/Desktop/decompile_tool_apk_files";
 
   public static AppSettingsState getInstance() {
     return ServiceManager.getService(AppSettingsState.class);
