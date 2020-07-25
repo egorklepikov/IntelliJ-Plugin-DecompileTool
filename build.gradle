@@ -18,9 +18,10 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-// See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2020.1.2'
+    version '193.6911.18'
+    type 'IC'
+    plugins 'android'
 }
 patchPluginXml {
     changeNotes """

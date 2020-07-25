@@ -1,7 +1,6 @@
 package com.plugin.decompiletool.settings;
 
 import com.intellij.openapi.options.Configurable;
-import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -11,7 +10,7 @@ public class AppSettingsConfigurable implements Configurable {
   private AppSettingsComponent settingsComponent;
 
   @Override
-  public @Nls(capitalization = Nls.Capitalization.Title) String getDisplayName() {
+  public String getDisplayName() {
     return "Decompile Tool";
   }
 
