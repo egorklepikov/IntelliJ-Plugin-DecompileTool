@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class SettingsDialog extends JDialog {
@@ -34,6 +35,7 @@ public class SettingsDialog extends JDialog {
 
   private HashMap<String, AppInformation> applications;
   private HashMap<String, AppInformation.AppRelease> releases;
+  private HashMap<String, Thread> decompileToolThreads;
 
   public SettingsDialog() {
     setContentPane(contentPane);
@@ -47,6 +49,8 @@ public class SettingsDialog extends JDialog {
         onCancel();
       }
     });
+
+    decompileToolThreads = new HashMap<>();
 
     searchProgress.setVisible(false);
 
@@ -184,9 +188,12 @@ public class SettingsDialog extends JDialog {
     }
 
     DecompileTool.getInstance().setTargetApkPath(AppSettingsState.getInstance().apkStoragePath);
-    new Thread(() -> {
+
+    Thread processThread = new Thread(() -> {
       DecompileTool.getInstance().startAppProcessing();
-    }).start();
+    });
+    processThread.start();
+    decompileToolThreads.put("DecompileToolProcessThread", processThread);
   }
 
   private AppInformation.AppRelease getAppReleaseInformation() {
@@ -213,7 +220,7 @@ public class SettingsDialog extends JDialog {
       String selectedItem = (String) selectAppComboBox.getSelectedItem();
       if (selectedItem != null) {
         String appName = selectedItem.split("\\[")[0];
-        String appVendor = selectedItem.split(String.valueOf("\\["))[1];
+        String appVendor = selectedItem.split("\\[")[1];
         if (appName.contains(application.getValue().getAppName()) && appVendor.contains(application.getValue().getVendor())) {
           appInformation = application.getValue();
           break;
@@ -226,12 +233,24 @@ public class SettingsDialog extends JDialog {
   }
 
   private void onCancel() {
+    for(Iterator<Map.Entry<String, Thread>> iterator = decompileToolThreads.entrySet().iterator(); iterator.hasNext(); ) {
+      Map.Entry<String, Thread> thread = iterator.next();
+      if (!thread.getValue().isInterrupted()) {
+        thread.getValue().interrupt();
+        System.out.println(thread.getKey() + " was successfully interrupted");
+      } else {
+        System.out.println(thread.getKey() + " already interrupted");
+      }
+      iterator.remove();
+      System.out.println(thread.getKey() + " was removed from collection");
+    }
     dispose();
   }
 
   private void onSearch() {
     changeOnSearchUI(1);
-    new Thread(() -> {
+
+    Thread searchThread = new Thread(() -> {
       int searchResult = ApplicationDataController.getInstance().loadData(bundleIDField.getText());
       changeOnSearchUI(searchResult);
       if (searchResult == 3) {
@@ -240,6 +259,8 @@ public class SettingsDialog extends JDialog {
           selectAppComboBox.addItem(application.getKey());
         }
       }
-    }).start();
+    });
+    searchThread.start();
+    decompileToolThreads.put("DecompileToolSearchThread", searchThread);
   }
 }
