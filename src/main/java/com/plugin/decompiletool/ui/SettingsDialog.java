@@ -62,9 +62,9 @@ public class SettingsDialog extends JDialog {
     remoteLoadType.addActionListener(e -> changeLoadingMethodUI(2));
     bundleIDField.addKeyListener(new KeyAdapter() {
       public void keyReleased(KeyEvent e) {
-        if (bundleIDField.getText().length() == 0)
+        if (bundleIDField.getText().length() == 0) {
           loadDataButton.setEnabled(false);
-        else {
+        } else {
           loadDataButton.setEnabled(true);
         }
       }
@@ -84,9 +84,9 @@ public class SettingsDialog extends JDialog {
     });
 
     contentPane.registerKeyboardAction(
-      e -> onCancel(),
-      KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-      JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
+        e -> onCancel(),
+        KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
     );
 
     ButtonGroup radioButtonGroup = new ButtonGroup();
@@ -233,7 +233,7 @@ public class SettingsDialog extends JDialog {
   }
 
   private void onCancel() {
-    for(Iterator<Map.Entry<String, Thread>> iterator = decompileToolThreads.entrySet().iterator(); iterator.hasNext(); ) {
+    for (Iterator<Map.Entry<String, Thread>> iterator = decompileToolThreads.entrySet().iterator(); iterator.hasNext(); ) {
       Map.Entry<String, Thread> thread = iterator.next();
       if (!thread.getValue().isInterrupted()) {
         thread.getValue().interrupt();
@@ -249,13 +249,12 @@ public class SettingsDialog extends JDialog {
 
   private void onSearch() {
     changeOnSearchUI(1);
-
     Thread searchThread = new Thread(() -> {
       int searchResult = ApplicationDataController.getInstance().loadData(bundleIDField.getText());
       changeOnSearchUI(searchResult);
       if (searchResult == 3) {
         applications = ApplicationDataController.getInstance().getAppsList();
-        for(Map.Entry<String, AppInformation> application : applications.entrySet()) {
+        for (Map.Entry<String, AppInformation> application : applications.entrySet()) {
           selectAppComboBox.addItem(application.getKey());
         }
       }
