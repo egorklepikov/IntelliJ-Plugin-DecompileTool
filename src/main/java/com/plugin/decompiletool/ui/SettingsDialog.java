@@ -3,6 +3,7 @@ package com.plugin.decompiletool.ui;
 import com.intellij.ui.JBColor;
 import com.plugin.decompiletool.controllers.ApplicationDataController;
 import com.plugin.decompiletool.settings.AppSettingsState;
+import decompiletool.CmdProcessor;
 import decompiletool.DecompileTool;
 import decompiletool.network.AppInformation;
 
@@ -244,6 +245,7 @@ public class SettingsDialog extends JDialog {
       iterator.remove();
       System.out.println(thread.getKey() + " was removed from collection");
     }
+    CmdProcessor.forceProcessInterrupt = true;
     dispose();
   }
 
