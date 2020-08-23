@@ -10,7 +10,10 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <applicationService serviceImplementation="com.plugin.decompiletool.settings.AppSettingsState"/>
+        <applicationConfigurable parentId="tools" instance="com.plugin.decompiletool.settings.AppSettingsConfigurable"
+                                 id="com.plugin.decompiletool.settings.AppSettingsConfigurable"
+                                 displayName="Decompile Tool"/>
     </extensions>
 
     <actions>
